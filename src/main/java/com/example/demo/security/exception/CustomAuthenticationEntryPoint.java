@@ -1,4 +1,4 @@
-package com.ureca.juksoon.global.security.exception;
+package com.example.demo.security.exception;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,7 +1,5 @@
 package com.example.demo.security.oauth;
 
-import com.ureca.juksoon.global.refresh.service.RefreshTokenService;
-import com.ureca.juksoon.global.response.CustomCookieType;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -27,8 +25,7 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
-
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshService refreshService;
     @Value("${logout-with.kakao.logout-uri}")
     private String logoutUri;
 
@@ -84,7 +81,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
      * 카카오와 함께 로그아웃 리다이렉트
      */
     private void doLogout(String refreshToken, HttpServletResponse response) throws IOException {
-        refreshTokenService.deleteByToken(refreshToken);
+        refreshService.deleteByToken(refreshToken);
 
         Cookie cookie = new Cookie(CustomCookieType.AUTHORIZATION.getValue(), null);
         cookie.setMaxAge(0);
@@ -111,7 +108,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
     private boolean isInvalidRefreshToken(String refreshToken){
 
-        return refreshToken==null || !refreshTokenService.existsByToken(refreshToken);
+        return refreshToken==null || !refreshService.existsByToken(refreshToken);
 
     }
 }

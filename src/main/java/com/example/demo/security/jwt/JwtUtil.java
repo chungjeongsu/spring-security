@@ -7,6 +7,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.util.Base64;
 import java.util.Date;
@@ -52,14 +53,14 @@ public class JwtUtil {
      * JWT 토큰을 생성한다.
      * 1.
      */
-    public String generateJwtToken(Long userId, Role role) {    //토큰 생성
+    public String generateJwtToken(Long userId, String name, Role role) {    //토큰 생성
         Date now = new Date();
         Date exp = new Date(now.getTime() + jwtTokenValidityMs);    //현재시간 + 유효시간 = 만료되는 시간
 
         return Jwts.builder()
                 .claim(PrincipalKey.USER_ID.getKey(), userId)
-                .claim(PrincipalKey.USER_ROLE.getKey(), role)
                 .claim(PrincipalKey.USER_NAME.getKey(), name)
+                .claim(PrincipalKey.USER_ROLE.getKey(), role)
                 .expiration(exp)
                 .signWith(this.key)
                 .compact();

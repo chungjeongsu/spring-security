@@ -1,5 +1,10 @@
 package com.example.demo.security.refresh;
 
+import com.example.demo.security.common.PrincipalKey;
+import com.example.demo.user.Role;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -39,7 +44,7 @@ public class RefreshUtil {
     }
 
     //리프레시 토큰 생성
-    public String generateRefreshToken(Long userId, UserRole userRole) {
+    public String generateRefreshToken(Long userId, Role role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenValidityMs);
 

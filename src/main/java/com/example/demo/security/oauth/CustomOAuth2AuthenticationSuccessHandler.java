@@ -1,5 +1,7 @@
 package com.example.demo.security.oauth;
 
+import com.example.demo.security.common.PrincipalKey;
+import com.example.demo.user.Role;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ureca.juksoon.global.refresh.service.RefreshTokenService;
 import com.ureca.juksoon.domain.user.entity.UserRole;
@@ -35,29 +37,29 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
 
     private final JwtUtil jwtUtil;
     private final RefreshUtil refreshUtil;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshService refreshService;
     private final ObjectMapper objectMapper;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         OAuth2User principal = (OAuth2User) authentication.getPrincipal();
         Long userId = (Long) principal.getAttributes().get(PrincipalKey.USER_ID.getKey());                              //Object로 반환해줘서 형변환
-        UserRole role = UserRole.valueOf(principal.getAttributes().get(PrincipalKey.USER_ROLE.getKey()).toString());    //Object로 반환해주기 때문에, String으로 바꿔, UserRole.valueOf를 해준다.
+        Role role = Role.valueOf(principal.getAttributes().get(PrincipalKey.USER_ROLE.getKey()).toString());    //Object로 반환해주기 때문에, String으로 바꿔, UserRole.valueOf를 해준다.
         String jwt = generateJwtToken(userId, role);                  //jwt 생성
         String refreshToken = generateRefreshToken(userId, role);     //refresh token 생성
 
         log.info("JWT {}", jwt);
         log.info("Refresh-Token {}", refreshToken);
 
-        refreshTokenService.save(refreshToken);                         //refresh token 저장한다. --> 서비스단에서 뭐, refreshTokenProvider 호출
+        refreshService.save(refreshToken);                         //refresh token 저장한다. --> 서비스단에서 뭐, refreshTokenProvider 호출
         setBaseResponse(jwt, refreshToken, response);
     }
 
-    private String generateJwtToken(Long userId, UserRole userRole) {
+    private String generateJwtToken(Long userId, Role role) {
         return jwtUtil.generateJwtToken(userId, userRole);
     }
 
-    private String generateRefreshToken(Long userId, UserRole userRole) {
+    private String generateRefreshToken(Long userId, Role role) {
         return refreshUtil.generateRefreshToken(userId, userRole);
     }
 
@@ -85,7 +87,7 @@ public class CustomOAuth2AuthenticationSuccessHandler implements AuthenticationS
     }
 
     private void setFirstLoginAuthorization(HttpServletResponse response, String jwt) throws IOException {
-        UserRole role = jwtUtil.getRole(jwt);
+        Role role = jwtUtil.getRole(jwt);
         if (role == UserRole.ROLE_FIRST_LOGIN) {
             objectMapper.writeValue(response.getWriter(), String.format("{\"role\":\"%s\"}", role));
         }

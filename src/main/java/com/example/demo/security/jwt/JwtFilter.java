@@ -17,12 +17,6 @@ import java.io.IOException;
 @Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    @Value("${plus-uri.jwt-authentication-filter.oauth_success_login_code_start_with}")
-    private String oauthSuccessLoginCodeStartWith;
-
-    @Value("${plus-uri.jwt-authentication-filter.oauth_login_request_uri_start_with}")
-    private String oauthLoginRequestUriStartWith;
-
     private final JwtUtil jwtUtil;
 
     /**
@@ -40,11 +34,13 @@ public class JwtFilter extends OncePerRequestFilter {
         setSecurityContextHolder(jwt);
         filterChain.doFilter(request, response);
     }
+
     //request의 header에서 jwt를 빼온다.
     private String resolveToken(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         return authorization.replace("Bearer ", "").trim();
     }
+
     //securityContextHolder에 jwt를 저장한다.
     private void setSecurityContextHolder(String jwt) {
         Authentication authentication = jwtUtil.toAuthentication(jwt);

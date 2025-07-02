@@ -1,4 +1,4 @@
-package com.ureca.juksoon.global.security.oauth.response;
+package com.example.demo.security.oauth.provider.kakao;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
